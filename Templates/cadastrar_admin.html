@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cadastrar Administrador</title>
+    <link rel="stylesheet" href="/static/css/cadmin.css">
+</head>
+<body>
+    <header>
+        <h1>Cadastrar Administrador</h1>
+        <p>Crie um novo usuário com permissões administrativas</p>
+    </header>
+
+    <nav>
+        <a href="/">Home</a>
+        <a href="/disciplinas">Disciplinas</a>
+        <a href="/professores">Professores</a>
+        {% if session.get('tipo')|int == 1 %}
+            <a href="/cadastrar_admin">Cadastrar Administrador</a>
+            <a href="/cadastrar_professor">Cadastrar Professor</a>
+            <a href="/cadastrar_materia">Cadastrar Matéria</a>
+            <a href="/usuarios">Ver Usuários</a>
+        {% endif %}
+        {% if session.get('email') %}
+            <a href="/logout">Sair</a>
+        {% else %}
+            <a href="/login">Login</a>
+        {% endif %}
+    </nav>
+
+    <main>
+        <form method="POST" action="/cadastrar_admin">
+            <h1>Cadastrar Administrador</h1>
+        
+            <label for="email">Email:</label>
+            <input type="email" name="email" required>
+        
+            <label for="senha">Senha:</label>
+            <input type="password" name="senha" id="senha" required>
+        
+            <div class="mostrar-senha-container">
+                <input type="checkbox" onclick="mostrarSenha()"> Mostrar senha
+            </div>
+        
+            <input type="submit" value="Cadastrar">
+            
+            {% if sucesso %}
+                <p style="color: green;">Administrador cadastrado com sucesso!</p>
+            {% endif %}
+        </form>
+        
+        <script>
+            function mostrarSenha() {
+                var senhaInput = document.getElementById("senha");
+                if (senhaInput.type === "password") {
+                    senhaInput.type = "text";
+                } else {
+                    senhaInput.type = "password";
+                }
+            }
+        </script>
+    </main>
+
+    <footer>
+        <p>PPG © 2025 - All Rights Reserved</p>
+    </footer>
+</body>
+</html>

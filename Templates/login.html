@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login</title>
+    <link rel="stylesheet" href="/static/css/login.css">
+</head>
+<body>
+    <header>
+        {% if session.get('type')|int == 1 %}
+            <h2>Painel do Administrador</h2>
+            <p>Utilize as opções acima para gerenciar o sistema.</p>
+        {% else %}
+            <h1>Avaliação UFMG</h1>
+            <p>Consulte e avalie disciplinas e professores nesse site</p>
+        {% endif %}
+    </header>
+    <nav>
+        <a href="/">Home</a>
+        <a href="/disciplinas">Disciplinas</a>
+        <a href="/professores">Professores</a>
+        
+        {% if session.get('tipo') == 1 %}
+            <a href="/cadastrar_admin">Cadastrar Administrador</a>
+            <a href="/cadastrar_professor">Cadastrar Professor</a>
+            <a href="/cadastrar_materia">Cadastrar Matéria</a>
+            <a href="/usuarios">Ver Usuários</a>
+        {% endif %}
+        
+        {% if session.get('email') %}
+            <a href="/logout">Sair</a>
+        {% else %}
+            <a href="/login">Login</a>
+        {% endif %}
+    </nav>
+    <main>
+        <h1>Acesse sua conta</h1>
+
+        <form action="/acesso" method="post">
+            <h1>Login</h1>
+            {% if error %}
+            <p style="color:red;">{{ error }}</p>
+            {% endif %}
+        
+            <label for="email">Email</label>
+            <input type="email" name="email" id="email" placeholder="Digite seu email" required>
+        
+            <label for="senha">Senha</label>
+            <input type="password" name="senha" id="senha" placeholder="Digite sua senha" required>
+        
+            <!-- Checkbox alinhado à direita -->
+            <div class="mostrar-senha-container">
+                <label for="mostrarSenha">Mostrar senha</label>
+                <input type="checkbox" id="mostrarSenha" onclick="toggleSenha()">
+            </div>
+        
+            <input type="submit" value="Entrar">
+        
+            <div class="esqueceu-senha">
+                Esqueceu sua senha? <a href="#"> Clique aqui</a>
+            </div>
+        </form>
+    </main>
+    <footer>
+        <p>PPG © 2025 - All Rights Reserved</p>
+    </footer>
+
+    <script>
+        function toggleSenha() {
+            const senhaInput = document.getElementById("senha");
+            const mostrarSenhaCheckbox = document.getElementById("mostrarSenha");
+
+            // Alterando o tipo do campo de senha entre "password" e "text"
+            senhaInput.type = mostrarSenhaCheckbox.checked ? "text" : "password";
+        }
+    </script>
+</body>
+</html>

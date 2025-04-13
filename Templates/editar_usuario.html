@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <title>Editar Usuário</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/editar_usuario.css') }}">
+</head>
+<body>
+    <header>
+        <h1>Avaliação UFMG</h1>
+        <p>Consulte e avalie disciplinas e professores nesse site</p>
+    </header>
+    <nav>
+        <a href="/">Home</a>
+        <a href="/disciplinas">Disciplinas</a>
+        <a href="/professores">Professores</a>
+        {% if session.get('tipo') == 1 %}
+            <a href="/cadastrar_admin">Cadastrar Administrador</a>
+            <a href="/cadastrar_professor">Cadastrar Professor</a>
+            <a href="/cadastrar_materia">Cadastrar Matéria</a>
+            <a href="/usuarios">Ver Usuários</a>
+        {% endif %}
+        {% if session.get('email') %}
+            <a href="/logout">Sair</a>
+        {% else %}
+            <a href="/login">Login</a>
+        {% endif %}
+    </nav>
+    
+    <h1 style="text-align: center;">Editar Usuário - {{ email }}</h1> <!-- Centralizado -->
+
+    <form method="POST">
+        <!-- Campos do usuário para edição -->
+        <label for="email">Email:</label>
+        <input type="email" id="email" name="email" value="{{ email }}" disabled><br><br>
+
+        <label for="senha">Senha:</label>
+        <input type="password" id="senha" name="senha" required><br><br>
+
+        <!-- Botão Mostrar Senha -->
+        <div class="mostrar-senha-container">
+            <label for="mostrar-senha">Mostrar senha:</label>
+            <input type="checkbox" id="mostrar-senha">
+        </div>
+
+        <label for="tipo">Tipo:</label>
+        <select name="tipo" id="tipo" required>
+            <option value="1" {% if tipo == '1' %}selected{% endif %}>Administrador</option>
+            <option value="2" {% if tipo == '2' %}selected{% endif %}>Aluno</option>
+            <option value="3" {% if tipo == '3' %}selected{% endif %}>Professor</option>
+        </select><br><br>
+
+        <button type="submit">Salvar Alterações</button>
+    </form>
+
+    <script>
+        // Script para mostrar/esconder a senha
+        document.getElementById('mostrar-senha').addEventListener('change', function() {
+            var senhaInput = document.getElementById('senha');
+            if (this.checked) {
+                senhaInput.type = 'text';
+            } else {
+                senhaInput.type = 'password';
+            }
+        });
+    </script>
+</body>
+</html>

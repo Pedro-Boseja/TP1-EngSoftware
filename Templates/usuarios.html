@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <title>Usuários Cadastrados</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/usuarios.css') }}">
+</head>
+<body>
+    <header>
+        <h1>Avaliação UFMG</h1>
+        <p>Consulte e avalie disciplinas e professores nesse site</p>
+    </header>
+    <nav>
+        <a href="/">Home</a>
+        <a href="/disciplinas">Disciplinas</a>
+        <a href="/professores">Professores</a>
+        
+        {% if session.get('tipo') == 1 %}
+            <a href="/cadastrar_admin">Cadastrar Administrador</a>
+            <a href="/cadastrar_professor">Cadastrar Professor</a>
+            <a href="/cadastrar_materia">Cadastrar Matéria</a>
+            <a href="/usuarios">Ver Usuários</a>
+        {% endif %}
+        
+        {% if session.get('email') %}
+            <a href="/logout">Sair</a>
+        {% else %}
+            <a href="/login">Login</a>
+        {% endif %}
+    </nav>
+    <h1>Usuários Cadastrados</h1>
+
+    <form method="get" style="text-align: center; margin-bottom: 20px;">
+        <label for="tipo">Filtrar por tipo:</label>
+        <select name="tipo" id="tipo">
+            <option value="">Todos</option>
+            <option value="1" {% if tipo_selecionado == '1' %}selected{% endif %}>Administrador</option>
+            <option value="2" {% if tipo_selecionado == '2' %}selected{% endif %}>Aluno</option>
+            <option value="3" {% if tipo_selecionado == '3' %}selected{% endif %}>Professor</option>
+        </select>
+        <button type="submit">Filtrar</button>
+    </form>
+    <table>
+        <thead>
+            <tr>
+                <th>Email</th>
+                <th>Tipo</th>
+                <th>Ações</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for email, tipo in usuarios %}
+                <tr>
+                    <td>{{ email }}</td>
+                    <td>
+                        {% if tipo == 1 %}Administrador
+                        {% elif tipo == 2 %}Aluno
+                        {% elif tipo == 3 %}Professor
+                        {% else %}Desconhecido
+                        {% endif %}
+                    </td>
+                    <td>
+                        <!-- Formulário para editar usuário -->
+                        <form action="{{ url_for('editar_usuario', email=email) }}" method="GET" style="display:inline;">
+                            <button type="submit" class="editar">✏️ Editar</button>
+                        </form> |
+                    
+                        <!-- Formulário para exclusão de usuário -->
+                        <form action="{{ url_for('excluir_usuario', email=email) }}" method="POST" style="display:inline;">
+                            <button type="submit" onclick="return confirm('Tem certeza que deseja excluir este usuário?');" class="excluir">❌ Excluir</button>
+                        </form>
+                    </td>
+                                     
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</body>
+</html>
