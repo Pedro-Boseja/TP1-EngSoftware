@@ -1,19 +1,19 @@
 from .classUsuario import Usuario
 import pymysql
 
-class Aluno(Usuario):
-    def __init__(self, email, senha, nome, matricula):
+class Professor(Usuario):
+    def __init__(self, nome, matricula, email, senha):
         """
-        Inicializa a instância da classe Aluno, que herda de Usuario.
-        O atributo 'type' é automaticamente definido como 3 para Aluno.
+        Inicializa a instância da classe Professor.
+        Atributo 'type' definido como 2 (professor).
         """
-        super().__init__(email, senha, tipo=3)
-        self.__nome = nome
-        self.__matricula = matricula
+        self.nome = nome
+        self.matricula = matricula
+        super().__init__(email, senha, tipo=2)
 
     def salvar_no_banco(self):
         """
-        Salva o aluno no banco de dados MySQL via PyMySQL.
+        Salva o professor no banco de dados MySQL via PyMySQL.
         """
         try:
             conn = pymysql.connect(
@@ -25,9 +25,8 @@ class Aluno(Usuario):
             )
             cursor = conn.cursor()
 
-            # Cria a tabela se não existir
             cursor.execute('''
-                CREATE TABLE IF NOT EXISTS sistema_avaliacao.Alunos (
+                CREATE TABLE IF NOT EXISTS sistema_avaliacao.Professores (
                     email VARCHAR(255) PRIMARY KEY,
                     senha VARCHAR(255) NOT NULL,
                     nome VARCHAR(255) NOT NULL,
@@ -36,25 +35,24 @@ class Aluno(Usuario):
                 )
             ''')
 
-            # Insere o aluno
             cursor.execute('''
-                INSERT INTO sistema_avaliacao.Alunos (email, senha, nome, matricula, tipo)
+                INSERT INTO sistema_avaliacao.Professores (email, senha, nome, matricula, tipo)
                 VALUES (%s, %s, %s, %s, %s)
             ''', (
-                self.get_email(),
-                self.get_senha(),
-                self.get_nome(),
-                self.get_matricula(),
+                self.get_email(), 
+                self.get_senha(), 
+                self.nome, 
+                self.matricula, 
                 self.get_type()
-            ))
-
+                ))
+            
             conn.commit()
             return True  # sucesso
         except pymysql.err.IntegrityError:
-            print(f"Aluno com email '{self.get_email()}' já existe.")
+            print(f"Professor com email '{self.get_email()}' já existe.")
             return False
         except Exception as e:
-            print(f"Erro ao salvar aluno no banco: {e}")
+            print(f"Erro ao salvar professor no banco: {e}")
             return False
         finally:
             conn.close()
@@ -64,6 +62,6 @@ class Aluno(Usuario):
 
     def get_matricula(self):
         return self.__matricula
-
+    
     def __repr__(self):
-        return f"Aluno(email={self.get_email()}, nome={self.__nome}, matricula={self.__matricula}, tipo={self.get_type()})"
+        return f"Professor(nome={self.nome}, matricula={self.matricula}, email={self.get_email()}, type={self.get_type()})"

@@ -3,13 +3,13 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Cadastrar Administrador</title>
+    <title>Cadastrar Professor</title>
     <link rel="stylesheet" href="/static/css/cadmin.css">
 </head>
 <body>
     <header>
-        <h1>Cadastrar Administrador</h1>
-        <p>Crie um novo usuário com permissões administrativas</p>
+        <h1>Cadastrar Professor</h1>
+        <p>Crie um novo usuário com permissões docentes</p>
     </header>
 
     <nav>
@@ -31,37 +31,36 @@
     </nav>
 
     <main>
-        <form method="POST" action="/cadastrar_admin">
-            <h1>Cadastrar Administrador</h1>
-        
+        <form method="POST" action="/cadastrar_professor">
+            <h1>Cadastrar Professor</h1>
+    
+            <label for="nome">Nome:</label>
+            <input type="text" name="nome" required>
+    
+            <label for="matricula">Matrícula:</label>
+            <input type="text" name="matricula" required>
+    
             <label for="email">Email:</label>
             <input type="email" name="email" required>
-        
+    
             <label for="senha">Senha:</label>
             <input type="password" name="senha" id="senha" required>
-        
+    
             <div class="mostrar-senha-container">
                 <input type="checkbox" onclick="mostrarSenha()"> Mostrar senha
             </div>
-        
+    
             <input type="submit" value="Cadastrar">
-            
+    
             {% if sucesso %}
-                <p style="color: green;">Administrador cadastrado com sucesso!</p>
-            {% elif erro %}
-                <p style="color: red;">{{ erro }}</p>
+                <p style="color: green;">Professor cadastrado com sucesso!</p>
             {% endif %}
-
         </form>
-        
+    
         <script>
             function mostrarSenha() {
                 var senhaInput = document.getElementById("senha");
-                if (senhaInput.type === "password") {
-                    senhaInput.type = "text";
-                } else {
-                    senhaInput.type = "password";
-                }
+                senhaInput.type = senhaInput.type === "password" ? "text" : "password";
             }
         </script>
     </main>

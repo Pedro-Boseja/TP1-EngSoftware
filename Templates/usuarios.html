@@ -17,8 +17,9 @@
         
         {% if session.get('tipo') == 1 %}
             <a href="/cadastrar_admin">Cadastrar Administrador</a>
+            <a href="/cadastrar_aluno">Cadastrar Aluno</a>
             <a href="/cadastrar_professor">Cadastrar Professor</a>
-            <a href="/cadastrar_materia">Cadastrar Matéria</a>
+            <a href="/cadastrar_disciplina">Cadastrar Disciplina</a>
             <a href="/usuarios">Ver Usuários</a>
         {% endif %}
         
@@ -49,31 +50,30 @@
             </tr>
         </thead>
         <tbody>
-            {% for email, tipo in usuarios %}
+            {% for usuario in usuarios %}
                 <tr>
-                    <td>{{ email }}</td>
+                    <td>{{ usuario.email }}</td>
                     <td>
-                        {% if tipo == 1 %}Administrador
-                        {% elif tipo == 2 %}Aluno
-                        {% elif tipo == 3 %}Professor
+                        {% if usuario.tipo == 1 %}Administrador
+                        {% elif usuario.tipo == 2 %}Aluno
+                        {% elif usuario.tipo == 3 %}Professor
                         {% else %}Desconhecido
                         {% endif %}
                     </td>
                     <td>
                         <!-- Formulário para editar usuário -->
-                        <form action="{{ url_for('editar_usuario', email=email) }}" method="GET" style="display:inline;">
+                        <form action="{{ url_for('editar_usuario', email=usuario.email) }}" method="GET" style="display:inline;">
                             <button type="submit" class="editar">✏️ Editar</button>
                         </form> |
-                    
+        
                         <!-- Formulário para exclusão de usuário -->
-                        <form action="{{ url_for('excluir_usuario', email=email) }}" method="POST" style="display:inline;">
+                        <form action="{{ url_for('excluir_usuario', email=usuario.email) }}" method="POST" style="display:inline;">
                             <button type="submit" onclick="return confirm('Tem certeza que deseja excluir este usuário?');" class="excluir">❌ Excluir</button>
                         </form>
                     </td>
-                                     
                 </tr>
             {% endfor %}
-        </tbody>
+        </tbody>        
     </table>
 </body>
 </html>

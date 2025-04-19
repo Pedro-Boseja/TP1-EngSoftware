@@ -13,12 +13,11 @@ class Usuario:
     def verificar_senha(self, senha_input):
         return self.__senha == senha_input
 
-    def alterar_senha(self, nova_senha):
-        self.__senha = nova_senha
-        print("Senha alterada com sucesso.")
-
     def get_email(self):
         return self.__email
+    
+    def get_senha(self):
+        return self.__senha
 
     def get_type(self):
         return self.__type
@@ -28,3 +27,6 @@ class Usuario:
 
     def set_type(self, novo_type):
         self.__type = novo_type
+    
+    def set_senha(self, nova_senha):
+        self.__senha = nova_senha

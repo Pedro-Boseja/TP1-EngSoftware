@@ -2,15 +2,13 @@
 <html lang="pt-br">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Avaliação UFMG</title>
-    <link rel="stylesheet" href="/static/css/index.css">
+    <title>Editar Disciplina</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/editar_usuario.css') }}">
 </head>
 <body>
     <header>
-            <h1>Avaliação UFMG</h1>
-            <p>Consulte e avalie disciplinas e professores nesse site</p>
-
+        <h1>Avaliação UFMG</h1>
+        <p>Consulte e avalie disciplinas e professores nesse site</p>
     </header>
     <nav>
         <a href="/">Home</a>
@@ -31,17 +29,15 @@
             <a href="/login">Login</a>
         {% endif %}
     </nav>
-    <main>
-        {% if session.get('type')|int == 1 %}
-            <h2>Painel do Administrador</h2>
-            <p>Utilize as opções acima para gerenciar o sistema.</p>
-        {% else %}
-            <h2>Bem vindo!</h2>
-            <p>Clique nos botões acima para explorar as avaliações.</p>        
-        {% endif %}
-    </main>
-    <footer>
-        <p>PPG © 2025 - All Rights Reserved</p>
-    </footer>
+
+    <h1 style="text-align: center;">Editar Disciplina - {{ disciplina.codigo }}</h1> 
+
+    <form method="POST">
+        <label for="nome">Código da Disciplina:</label>
+        <input type="text" name="codigo" value="{{ disciplina.codigo }}" required>
+        <label for="nome">Nome da Disciplina:</label>
+        <input type="text" name="nome" value="{{ disciplina.nome }}" required>
+        <button type="submit">Salvar alterações</button>
+    </form>
 </body>
 </html>

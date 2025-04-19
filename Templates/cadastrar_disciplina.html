@@ -3,43 +3,51 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Avaliação UFMG</title>
-    <link rel="stylesheet" href="/static/css/index.css">
+    <title>Cadastrar Disciplina</title>
+    <link rel="stylesheet" href="/static/css/cadmin.css">
 </head>
 <body>
     <header>
-            <h1>Avaliação UFMG</h1>
-            <p>Consulte e avalie disciplinas e professores nesse site</p>
-
+        <h1>Cadastrar Disciplina</h1>
+        <p>Crie uma nova disciplina</p>
     </header>
+
     <nav>
         <a href="/">Home</a>
         <a href="/disciplinas">Disciplinas</a>
         <a href="/professores">Professores</a>
-        
-        {% if session.get('tipo') == 1 %}
+        {% if session.get('tipo')|int == 1 %}
             <a href="/cadastrar_admin">Cadastrar Administrador</a>
             <a href="/cadastrar_aluno">Cadastrar Aluno</a>
             <a href="/cadastrar_professor">Cadastrar Professor</a>
             <a href="/cadastrar_disciplina">Cadastrar Disciplina</a>
             <a href="/usuarios">Ver Usuários</a>
         {% endif %}
-        
         {% if session.get('email') %}
             <a href="/logout">Sair</a>
         {% else %}
             <a href="/login">Login</a>
         {% endif %}
     </nav>
+
     <main>
-        {% if session.get('type')|int == 1 %}
-            <h2>Painel do Administrador</h2>
-            <p>Utilize as opções acima para gerenciar o sistema.</p>
-        {% else %}
-            <h2>Bem vindo!</h2>
-            <p>Clique nos botões acima para explorar as avaliações.</p>        
-        {% endif %}
-    </main>
+        <form method="POST" action="/cadastrar_disciplina">
+            <h1>Cadastrar Disciplina</h1>
+    
+            <label for="codigo">Código da Disciplina:</label>
+            <input type="text" name="codigo" id="codigo" required>
+    
+            <label for="nome">Nome da Disciplina:</label>
+            <input type="text" name="nome" id="nome" required>
+    
+            <input type="submit" value="Cadastrar">
+    
+            {% if sucesso %}
+                <p style="color: green;">Disciplina cadastrada com sucesso!</p>
+            {% endif %}
+        </form>
+    </main>    
+
     <footer>
         <p>PPG © 2025 - All Rights Reserved</p>
     </footer>

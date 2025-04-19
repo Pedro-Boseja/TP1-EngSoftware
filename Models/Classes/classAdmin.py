@@ -5,12 +5,9 @@ class Admin(Usuario):
     def __init__(self, email, senha):
         """
         Inicializa a instância da classe Admin, que herda de Usuario.
-        O atributo 'type' é automaticamente definido como 1 para Admin.
+        O atributo 'tipo' é automaticamente definido como 1 para Admin.
         """
         super().__init__(email, senha, tipo=1)  # tipo=1 identifica administrador
-
-        # Salvar no banco de dados
-        self.salvar_no_banco()
 
     def salvar_no_banco(self):
         """
@@ -29,23 +26,28 @@ class Admin(Usuario):
 
             # Cria a tabela se não existir
             cursor.execute('''
-                CREATE TABLE IF NOT EXISTS usuarios (
+                CREATE TABLE IF NOT EXISTS Administradores (
                     email VARCHAR(255) PRIMARY KEY,
                     senha VARCHAR(255) NOT NULL,
-                    type INT NOT NULL
+                    tipo INT NOT NULL
                 )
             ''')
 
             # Insere o usuário
-            cursor.execute("INSERT INTO administradores (email, senha, type) VALUES (%s, %s, %s)",
-                            (self.__email, self.__senha, self.__type))
+            cursor.execute(
+                "INSERT INTO Administradores (email, senha, tipo) VALUES (%s, %s, %s)",
+                (self.get_email(), self.get_senha(), self.get_type())
+            )
             conn.commit()
+            return True  # sucesso
         except pymysql.err.IntegrityError:
-            print(f"Usuário com email '{self.__email}' já existe.")
+            print(f"Usuário com email '{self.get_email()}' já existe.")
+            return False
+        except Exception as e:
+            print(f"Erro ao salvar admin no banco: {e}")
+            return False
         finally:
             conn.close()
 
     def __repr__(self):
-        return f"Admin(email={self.get_email()}, type={self.get_type()})"
-    
-
+        return f"Admin(email={self.get_email()}, tipo={self.get_type()})"

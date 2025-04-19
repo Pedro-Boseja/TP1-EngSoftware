@@ -2,15 +2,13 @@
 <html lang="pt-br">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Avaliação UFMG</title>
-    <link rel="stylesheet" href="/static/css/index.css">
+    <title>Disciplinas Cadastradas</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/usuarios.css') }}">
 </head>
 <body>
     <header>
         <h1>Avaliação UFMG</h1>
         <p>Consulte e avalie disciplinas e professores nesse site</p>
-   
     </header>
     <nav>
         <a href="/">Home</a>
@@ -19,8 +17,9 @@
         
         {% if session.get('tipo') == 1 %}
             <a href="/cadastrar_admin">Cadastrar Administrador</a>
+            <a href="/cadastrar_aluno">Cadastrar Aluno</a>
             <a href="/cadastrar_professor">Cadastrar Professor</a>
-            <a href="/cadastrar_materia">Cadastrar Matéria</a>
+            <a href="/cadastrar_disciplina">Cadastrar Disciplina</a>
             <a href="/usuarios">Ver Usuários</a>
         {% endif %}
         
@@ -30,17 +29,48 @@
             <a href="/login">Login</a>
         {% endif %}
     </nav>
-    <main>
-        {% if session.get('type')|int == 1 %}
-            <h2>Painel do Administrador</h2>
-            <p>Utilize as opções acima para gerenciar o sistema.</p>
-        {% else %}
-            <h2>Bem vindo!</h2>
-            <p>Clique nos botões acima para explorar as avaliações.</p>        
-        {% endif %}
-    </main>
-    <footer>
-        <p>PPG © 2025 - All Rights Reserved</p>
-    </footer>
+
+    <h1>Disciplinas Cadastradas</h1>
+
+<form method="get" style="text-align: center; margin-bottom: 20px;">
+    <label for="tipo">Filtrar por:</label>
+    <select name="ordenar" id="ordenar">
+        <option value="nome" {% if ordenar == 'nome' %}selected{% endif %}>Nome</option>
+        <option value="codigo" {% if ordenar == 'codigo' %}selected{% endif %}>Código</option>
+    </select>
+    <button type="submit">Filtrar</button>
+</form>
+
+{% if disciplinas %}
+    <table>
+        <tr>
+            <th>Código</th>
+            <th>Nome</th>
+            <th>Ação</th>
+        </tr>
+        {% for d in disciplinas %}
+            <tr>
+                <td>{{ d.codigo }}</td>
+                <td>{{ d.nome }}</td>
+                <td>
+                    {% if is_admin %}
+                        <!-- Formulário para editar disciplina -->
+                        <form action="{{ url_for('editar_disciplina', codigo=d.codigo) }}" method="GET" style="display:inline;">
+                            <button type="submit" class="editar">✏️ Editar</button>
+                        </form> |
+                
+                        <!-- Formulário para exclusão de disciplina -->
+                        <form action="{{ url_for('excluir_disciplina', codigo=d.codigo) }}" method="POST" style="display:inline;">
+                            <button type="submit" onclick="return confirm('Tem certeza que deseja excluir esta disciplina?');" class="excluir">❌ Excluir</button>
+                        </form>
+                    {% endif %}
+                </td>
+            </tr>
+        {% endfor %}
+    </table>
+{% else %}
+    <p>Nenhuma disciplina cadastrada.</p>
+{% endif %}
+
 </body>
 </html>

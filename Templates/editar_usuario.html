@@ -16,8 +16,9 @@
         <a href="/professores">Professores</a>
         {% if session.get('tipo') == 1 %}
             <a href="/cadastrar_admin">Cadastrar Administrador</a>
+            <a href="/cadastrar_aluno">Cadastrar Aluno</a>
             <a href="/cadastrar_professor">Cadastrar Professor</a>
-            <a href="/cadastrar_materia">Cadastrar Matéria</a>
+            <a href="/cadastrar_disciplina">Cadastrar Disciplina</a>
             <a href="/usuarios">Ver Usuários</a>
         {% endif %}
         {% if session.get('email') %}
@@ -27,7 +28,7 @@
         {% endif %}
     </nav>
     
-    <h1 style="text-align: center;">Editar Usuário - {{ email }}</h1> <!-- Centralizado -->
+    <h1 style="text-align: center;">Editar Usuário - {{ email }}</h1> 
 
     <form method="POST">
         <!-- Campos do usuário para edição -->
