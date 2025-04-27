@@ -2,7 +2,7 @@
 <html lang="pt-br">
 <head>
     <meta charset="UTF-8">
-    <title>Editar Disciplina</title>
+    <title>Avaliar Disciplina</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='css/editar_usuario.css') }}">
 </head>
 <body>
@@ -30,14 +30,22 @@
         {% endif %}
     </nav>
 
-    <h1 style="text-align: center;">Editar Disciplina - {{ codigo }}</h1> 
+    <h1 style="text-align: center;">Avaliar Disciplina - {{ codigo }}</h1> 
 
     <form method="POST">
-        <label for="codigo">Código da Disciplina:</label>
-        <input type="text" name="codigo" value="{{ codigo }}" readonly>
-        <label for="nome">Nome da Disciplina:</label>
-        <input type="text" name="nome" value="{{ nome }}" required>
-        <button type="submit">Salvar alterações</button>
+        <label for="nome">Código da disciplina:</label>
+        <input type="text" name="nome" value="{{ codigo }}" readonly>
+        <label for="matricula">Nome da disciplina:</label>
+        <input type="text" name="nome" value="{{ nome }}" readonly>
+        <label for="avaliacao">Avaliação:</label>
+        <select name="avaliacao" id="avaliacao" required>
+            <option value="1">1</option>
+            <option value="2">2</option>
+            <option value="3">3</option>
+            <option value="4">4</option>
+            <option value="5">5</option>
+        </select>
+        <button type="submit">Avaliar</button>
     </form>
 </body>
 </html>

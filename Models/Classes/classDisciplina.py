@@ -8,13 +8,11 @@ class Disciplina:
         self.__codigo = codigo
         self.__nome = nome
 
-        # Salvar no banco de dados ao instanciar
-        self.salvar_no_banco()
-
-    def salvar_no_banco(self):
+    def salvar_no_banco(self) -> bool:
         """
         Salva a disciplina no banco de dados.
         """
+        sucesso = False
         try:
             conn = pymysql.connect(
                 host='localhost',
@@ -39,12 +37,16 @@ class Disciplina:
                 (self.__codigo, self.__nome)
             )
             conn.commit()
+            sucesso = True
         except pymysql.err.IntegrityError:
             print(f"Disciplina com código '{self.__codigo}' já existe.")
+            sucesso = False
         except Exception as e:
             print(f"Erro ao salvar disciplina: {e}")
+            sucesso = False
         finally:
             conn.close()
+            return sucesso
 
     def __repr__(self):
         return f"Disciplina(codigo={self.__codigo}, nome={self.__nome})"

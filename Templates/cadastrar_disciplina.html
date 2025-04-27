@@ -44,6 +44,8 @@
     
             {% if sucesso %}
                 <p style="color: green;">Disciplina cadastrada com sucesso!</p>
+            {% elif disciplina_ja_existe %}
+            <p style="color: red;">Erro ao cadastrar disciplina. Verifique se o código já está cadastrado!</p>
             {% endif %}
         </form>
     </main>    

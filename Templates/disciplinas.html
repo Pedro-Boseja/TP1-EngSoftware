@@ -33,12 +33,13 @@
     <h1>Disciplinas Cadastradas</h1>
 
 <form method="get" style="text-align: center; margin-bottom: 20px;">
-    <label for="tipo">Filtrar por:</label>
+    <label for="tipo">Ordenar por:</label>
     <select name="ordenar" id="ordenar">
         <option value="nome" {% if ordenar == 'nome' %}selected{% endif %}>Nome</option>
         <option value="codigo" {% if ordenar == 'codigo' %}selected{% endif %}>Código</option>
+        <option value="avaliacao" {% if ordenar == 'avaliacao' %}selected{% endif %}>Avaliação</option>
     </select>
-    <button type="submit">Filtrar</button>
+    <button type="submit">Ordernar</button>
 </form>
 
 {% if disciplinas %}
@@ -46,23 +47,30 @@
         <tr>
             <th>Código</th>
             <th>Nome</th>
+            <th>Avaliação média</th>
             <th>Ação</th>
         </tr>
         {% for d in disciplinas %}
             <tr>
                 <td>{{ d.codigo }}</td>
                 <td>{{ d.nome }}</td>
+                <td>{{ d.media_avaliacao }}</td>
                 <td>
                     {% if is_admin %}
                         <!-- Formulário para editar disciplina -->
-                        <form action="{{ url_for('editar_disciplina', codigo=d.codigo) }}" method="GET" style="display:inline;">
+                        <form action="{{ url_for('editar_disciplina', codigo=d.codigo,  nome=d.nome) }}" method="GET" style="display:inline;">
                             <button type="submit" class="editar">✏️ Editar</button>
                         </form> |
                 
                         <!-- Formulário para exclusão de disciplina -->
-                        <form action="{{ url_for('excluir_disciplina', codigo=d.codigo) }}" method="POST" style="display:inline;">
+                        <form action="{{ url_for('excluir_disciplina', codigo=d.codigo, nome=d.nome) }}" method="POST" style="display:inline;">
                             <button type="submit" onclick="return confirm('Tem certeza que deseja excluir esta disciplina?');" class="excluir">❌ Excluir</button>
                         </form>
+                    {% elif is_aluno %}
+                    <!-- Formulário para avaliar disciplinas -->
+                    <form action="{{ url_for('avaliar_disciplina', codigo=d.codigo, nome=d.nome) }}" method="GET" style="display:inline;">
+                        <button type="submit" class="editar">✏️ Avaliar</button>
+                    </form>
                     {% endif %}
                 </td>
             </tr>

@@ -13,7 +13,7 @@ def conectar_banco():
     return pymysql.connect(
         host='localhost',
         user='root',
-        password='senha',
+        password='abc22abc22',
         database='sistema_avaliacao',
         cursorclass=pymysql.cursors.DictCursor
     )
@@ -58,35 +58,40 @@ def listar_disciplinas():
     conn = conectar_banco()
     cursor = conn.cursor()
 
+    query = '''SELECT d.*, COALESCE(AVG(a.nota), 0) as media_avaliacao
+               FROM sistema_avaliacao.Disciplinas d
+               LEFT JOIN sistema_avaliacao.AvaliacaoDisciplinas a ON d.codigo = a.codigo
+               GROUP BY d.codigo'''
+    
     # Filtra as disciplinas com base na ordenação
     if ordenar == 'codigo':
-        cursor.execute("SELECT * FROM sistema_avaliacao.Disciplinas ORDER BY codigo ASC")
+        cursor.execute(query + " ORDER BY d.codigo ASC")
+    elif ordenar == 'avaliacao':
+        cursor.execute(query + " ORDER BY media_avaliacao DESC")
     else:
-        cursor.execute("SELECT * FROM sistema_avaliacao.Disciplinas ORDER BY nome ASC")
+        cursor.execute(query + " ORDER BY d.nome ASC")
 
     disciplinas = cursor.fetchall()
     conn.close()
 
     # Verifica se o usuário logado é um administrador
     is_admin = session.get('tipo') == 1  # 1 representa Administrador
+    is_aluno = session.get('tipo') == 3  # 3 representa Aluno
 
-    return render_template('disciplinas.html', disciplinas=disciplinas, ordenar=ordenar, session=session, is_admin=is_admin)
+    return render_template('disciplinas.html', disciplinas=disciplinas, ordenar=ordenar, session=session, is_admin=is_admin, is_aluno=is_aluno)
 
-@app.route('/editar_disciplina/<codigo>', methods=['GET', 'POST'])
-def editar_disciplina(codigo):
-    conn = conectar_banco()
-    cursor = conn.cursor()
-
-    # Busca a disciplina com o código fornecido
-    cursor.execute("SELECT * FROM sistema_avaliacao.Disciplinas WHERE codigo = %s", (codigo,))
-    disciplina = cursor.fetchone()
-    conn.close()
-
-    if not disciplina:
-        flash('Disciplina não encontrada.', 'error')
-        return redirect(url_for('listar_disciplinas'))
-
+@app.route('/editar_disciplina/<codigo>/<nome>', methods=['GET', 'POST'])
+def editar_disciplina(codigo,nome):
     if request.method == 'POST':
+        conn = conectar_banco()
+        cursor = conn.cursor()
+        # Busca a disciplina pelo codigo fornecido
+        cursor.execute("SELECT * FROM sistema_avaliacao.Disciplinas WHERE codigo = %s", codigo)
+        disciplina = cursor.fetchone()
+        if not disciplina:
+            flash('Disciplina não encontrada.', 'error')
+            return redirect(url_for('listar_disciplinas'))
+
         # Atualiza os dados da disciplina
         nome = request.form.get('nome')
         cursor.execute("UPDATE sistema_avaliacao.Disciplinas SET nome = %s WHERE codigo = %s", (nome, codigo))
@@ -94,17 +99,96 @@ def editar_disciplina(codigo):
         conn.close()
         flash('Disciplina atualizada com sucesso!', 'success')
         return redirect(url_for('listar_disciplinas'))
-
-    return render_template('editar_disciplina.html', disciplina=disciplina)
+    
+    return render_template('editar_disciplina.html',codigo=codigo, nome=nome)
 
 @app.route('/excluir_disciplina/<codigo>')
 def excluir_disciplina(codigo):
     Disciplina.excluir_disciplina(codigo)
     return redirect(url_for('disciplinas'))
 
+@app.route('/avaliar_disciplina/<codigo>/<nome>', methods=['GET', 'POST'])
+def avaliar_disciplina(codigo,nome):
+    conn = conectar_banco()
+    cursor = conn.cursor()
+
+    # Busca a disciplina pelo codigo fornecido
+    cursor.execute("SELECT * FROM sistema_avaliacao.Disciplinas WHERE codigo = %s", codigo)
+    disciplina = cursor.fetchone()
+
+    if not disciplina:
+        flash('Disciplina não encontrada.', 'error')
+        return redirect(url_for('disciplinas'))
+
+    if request.method == 'POST':
+        # Atualiza os dados com a avalicao da disciplina
+        nota = int(request.form.get('avaliacao'))
+        query = """
+            INSERT INTO sistema_avaliacao.AvaliacaoDisciplinas (codigo, nota) 
+            VALUES (%s,%s)
+        """
+        cursor.execute(query, (codigo, nota))
+        conn.commit()
+        conn.close()
+        flash('Disciplina avaliada com sucesso!', 'success')
+        return redirect(url_for('listar_disciplinas'))
+
+    conn.close()
+    return render_template('avaliar_disciplina.html', codigo=codigo, nome=nome, session=session)
+
 @app.route('/professores')
 def professores():
-    return render_template('professores.html', session=session)
+    ordenar = request.args.get('ordenar', 'nome')  # Padrão é ordenar por nome
+    conn = conectar_banco()
+    cursor = conn.cursor()
+    query = '''SELECT p.nome, p.matricula, p.email, COALESCE(AVG(a.nota), 0) as media_avaliacao
+               FROM sistema_avaliacao.Professores p
+               LEFT JOIN sistema_avaliacao.AvaliacaoProfessores a ON p.matricula = a.matricula
+               GROUP BY p.matricula, p.nome, p.email'''
+    
+    # Filtra as disciplinas com base na ordenação
+    if ordenar == 'avaliacao':
+        cursor.execute(query + " ORDER BY media_avaliacao DESC")
+    else:
+        cursor.execute(query + " ORDER BY p.nome ASC")
+
+    professores = cursor.fetchall()
+    conn.close()
+
+    # Verifica se o usuário logado é um administrador
+    is_admin = session.get('tipo') == 1  # 1 representa Administrador
+    is_aluno = session.get('tipo') == 3  # 3 representa Aluno
+
+    return render_template('professores.html', professores=professores, ordenar=ordenar, session=session, is_admin=is_admin, is_aluno=is_aluno)
+
+@app.route('/avaliar_professor/<matricula>/<nome>', methods=['GET', 'POST'])
+def avaliar_professor(matricula,nome):
+    conn = conectar_banco()
+    cursor = conn.cursor()
+
+    # Busca o professor pela matricula fornecida
+    cursor.execute("SELECT * FROM sistema_avaliacao.Professores WHERE matricula = %s", matricula)
+    professor = cursor.fetchone()
+
+    if not professor:
+        flash('Professor não encontrado.', 'error')
+        return redirect(url_for('professores'))
+
+    if request.method == 'POST':
+         # Atualiza os dados com a avalicao do professor
+        nota = int(request.form.get('avaliacao'))
+        query = """
+            INSERT INTO sistema_avaliacao.AvaliacaoProfessores (matricula, nota) 
+            VALUES (%s,%s)
+        """
+        cursor.execute(query, (matricula, nota))
+        conn.commit()
+        conn.close()
+        flash('Professor avaliado com sucesso!', 'success')
+        return redirect(url_for('professores'))
+
+    conn.close()
+    return render_template('avaliar_professor.html', matricula=matricula, nome=nome, session=session)
 
 @app.route('/acesso', methods=['POST'])
 def acesso():
@@ -150,7 +234,7 @@ def cadastrar_aluno():
         if sucesso:
             return render_template('cadastrar_aluno.html', sucesso=True)
         else:
-            return render_template('cadastrar_aluno.html', erro="Erro ao cadastrar aluno. Verifique se o e-mail já está cadastrado.")
+            return render_template('cadastrar_aluno.html', erro="Erro ao cadastrar aluno. Verifique se o e-mail ou matricula já estão cadastrados.")
         
     return render_template('cadastrar_aluno.html')
 
@@ -178,6 +262,9 @@ def cadastrar_disciplina():
         codigo = request.form.get('codigo')
         nome = request.form.get('nome')
         nova_disciplina = Disciplina(codigo=codigo, nome=nome)
+        sucesso = nova_disciplina.salvar_no_banco()
+        if not sucesso:
+            return render_template('cadastrar_disciplina.html', disciplina_ja_existe = True)
         return render_template('cadastrar_disciplina.html', sucesso=True)
     
     return render_template('cadastrar_disciplina.html')

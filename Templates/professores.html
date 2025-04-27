@@ -2,15 +2,13 @@
 <html lang="pt-br">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Avaliação UFMG</title>
-    <link rel="stylesheet" href="/static/css/index.css">
+    <title>Porfessores</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/usuarios.css') }}">
 </head>
 <body>
     <header>
             <h1>Avaliação UFMG</h1>
             <p>Consulte e avalie disciplinas e professores nesse site</p>
-
     </header>
     <nav>
         <a href="/">Home</a>
@@ -31,15 +29,54 @@
             <a href="/login">Login</a>
         {% endif %}
     </nav>
-    <main>
-        {% if session.get('type')|int == 1 %}
-            <h2>Painel do Administrador</h2>
-            <p>Utilize as opções acima para gerenciar o sistema.</p>
-        {% else %}
-            <h2>Bem vindo!</h2>
-            <p>Clique nos botões acima para explorar as avaliações.</p>        
-        {% endif %}
-    </main>
+
+    <h1>Professores Cadastrados</h1>
+
+{% if professores %}
+    <form method="get" style="text-align: center; margin-bottom: 20px;">
+        <label for="tipo">Ordenar por:</label>
+        <select name="ordenar" id="ordenar">
+            <option value="nome" {% if ordenar == 'nome' %}selected{% endif %}>Nome</option>
+            <option value="avaliacao" {% if ordenar == 'avaliacao' %}selected{% endif %}>Avaliação</option>
+        </select>
+        <button type="submit">Ordenar</button>
+    </form>
+
+    <table>
+        <tr>
+            <th>Nome</th>
+            <th>Avaliação média</th>
+            <th>Ação</th>
+        </tr>
+        {% for p in professores %}
+            <tr>
+                <td>{{ p.nome }}</td>
+                <td>{{ p.media_avaliacao }}</td>
+                <td>
+                    {% if is_admin %}
+                        <!-- Formulário para editar professor -->
+                        <form action="{{ url_for('editar_usuario', email=p.email) }}" method="GET" style="display:inline;">
+                            <button type="submit" class="editar">✏️ Editar</button>
+                        </form> |
+                
+                        <!-- Formulário para exclusão de professor -->
+                        <form action="{{ url_for('excluir_usuario', email=p.email) }}" method="POST" style="display:inline;">
+                            <button type="submit" onclick="return confirm('Tem certeza que deseja excluir este professor?');" class="excluir">❌ Excluir</button>
+                        </form>
+                    {% elif is_aluno %}
+                        <!-- Formulário para avaliar professor -->
+                        <form action="{{ url_for('avaliar_professor', matricula=p.matricula, nome=p.nome) }}" method="GET" style="display:inline;">
+                            <button type="submit" class="editar">✏️ Avaliar</button>
+                        </form>
+                    {% endif %}
+                </td>
+            </tr>
+        {% endfor %}
+    </table>
+{% else %}
+    <p>Nenhum professor cadastrado.</p>
+{% endif %}
+
     <footer>
         <p>PPG © 2025 - All Rights Reserved</p>
     </footer>
