@@ -13,7 +13,7 @@ def conectar_banco():
     return pymysql.connect(
         host='localhost',
         user='root',
-        password='abc22abc22',
+        password='senha',
         database='sistema_avaliacao',
         cursorclass=pymysql.cursors.DictCursor
     )
@@ -325,7 +325,14 @@ def editar_usuario(email):
 def excluir_usuario(email):
     conn = conectar_banco()
     cursor = conn.cursor()
-    cursor.execute("DELETE FROM usuarios WHERE email = %s", (email,))
+    query = """
+            DELETE FROM sistema_avaliacao.Professores WHERE email = %s
+            UNION ALL
+            DELETE FROM sistema_avaliacao.Alunos WHERE email = %s
+            UNION ALL
+            DELETE FROM sistema_avaliacao.Administradores WHERE email = %s
+            """
+    cursor.execute(query, (email,))
     conn.commit()
     conn.close()
 
