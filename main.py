@@ -301,28 +301,6 @@ def listar_usuarios():
 
     return render_template('usuarios.html', usuarios=usuarios, tipo_selecionado=tipo_filtro, session=session)
 
-# @app.route('/editar_usuario/<email>', methods=['GET', 'POST'])
-# def editar_usuario(email):
-#     if request.method == 'POST':
-#         nova_senha = request.form.get('senha')
-
-#         conn = conectar_banco()
-#         cursor = conn.cursor()
-#         query = """
-#             UPDATE sistema_avaliacao.Professores SET senha = %s WHERE email = %s
-#             UNION ALL
-#             UPDATE sistema_avaliacao.Alunos SET senha = %s WHERE email = %s
-#             UNION ALL
-#             UPDATE sistema_avaliacao.Administradores SET senha = %s WHERE email = %s
-#         """
-#         cursor.execute(query, (nova_senha, email))
-#         conn.commit()
-#         conn.close()
-
-#         return redirect(url_for('listar_usuarios'))
-
-#     return render_template('editar_usuario.html', email=email, session=session)
-
 @app.route('/editar_usuario/<email>', methods=['GET', 'POST'])
 def editar_usuario(email):
     if request.method == 'POST':
