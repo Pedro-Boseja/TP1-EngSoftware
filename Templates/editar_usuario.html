@@ -35,7 +35,7 @@
         <label for="email">Email:</label>
         <input type="email" id="email" name="email" value="{{ email }}" disabled><br><br>
 
-        <label for="senha">Senha:</label>
+        <label for="senha">Nova senha:</label>
         <input type="password" id="senha" name="senha" required><br><br>
 
         <!-- Botão Mostrar Senha -->
@@ -43,13 +43,6 @@
             <label for="mostrar-senha">Mostrar senha:</label>
             <input type="checkbox" id="mostrar-senha">
         </div>
-
-        <label for="tipo">Tipo:</label>
-        <select name="tipo" id="tipo" required>
-            <option value="1" {% if tipo == '1' %}selected{% endif %}>Administrador</option>
-            <option value="2" {% if tipo == '2' %}selected{% endif %}>Aluno</option>
-            <option value="3" {% if tipo == '3' %}selected{% endif %}>Professor</option>
-        </select><br><br>
 
         <button type="submit">Salvar Alterações</button>
     </form>

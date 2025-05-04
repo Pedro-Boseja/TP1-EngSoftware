@@ -63,7 +63,7 @@
                         </form> |
                 
                         <!-- Formulário para exclusão de disciplina -->
-                        <form action="{{ url_for('excluir_disciplina', codigo=d.codigo, nome=d.nome) }}" method="POST" style="display:inline;">
+                        <form action="{{ url_for('excluir_disciplina', codigo=d.codigo)}}" method="POST" style="display:inline;">
                             <button type="submit" onclick="return confirm('Tem certeza que deseja excluir esta disciplina?');" class="excluir">❌ Excluir</button>
                         </form>
                     {% elif is_aluno %}

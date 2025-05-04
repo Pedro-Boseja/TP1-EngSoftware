@@ -1,5 +1,6 @@
 from .classUsuario import Usuario
 import pymysql
+import config
 
 class Admin(Usuario):
     def __init__(self, email, senha):
@@ -18,7 +19,7 @@ class Admin(Usuario):
             conn = pymysql.connect(
                 host='localhost',
                 user='root',
-                password='senha',
+                password=config.senha_banco,
                 database='sistema_avaliacao',
                 cursorclass=pymysql.cursors.DictCursor
             )

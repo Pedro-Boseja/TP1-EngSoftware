@@ -1,0 +1,1 @@
+senha_banco = "sua_senha"

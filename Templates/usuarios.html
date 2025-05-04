@@ -36,8 +36,8 @@
         <select name="tipo" id="tipo">
             <option value="">Todos</option>
             <option value="1" {% if tipo_selecionado == '1' %}selected{% endif %}>Administrador</option>
-            <option value="2" {% if tipo_selecionado == '2' %}selected{% endif %}>Aluno</option>
-            <option value="3" {% if tipo_selecionado == '3' %}selected{% endif %}>Professor</option>
+            <option value="2" {% if tipo_selecionado == '2' %}selected{% endif %}>Professor</option>
+            <option value="3" {% if tipo_selecionado == '3' %}selected{% endif %}>Aluno</option>
         </select>
         <button type="submit">Filtrar</button>
     </form>
@@ -55,8 +55,8 @@
                     <td>{{ usuario.email }}</td>
                     <td>
                         {% if usuario.tipo == 1 %}Administrador
-                        {% elif usuario.tipo == 2 %}Aluno
-                        {% elif usuario.tipo == 3 %}Professor
+                        {% elif usuario.tipo == 2 %}Professor
+                        {% elif usuario.tipo == 3 %}Aluno
                         {% else %}Desconhecido
                         {% endif %}
                     </td>

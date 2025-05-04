@@ -1,4 +1,5 @@
 import pymysql
+import config
 
 class Disciplina:
     def __init__(self, codigo, nome):
@@ -17,7 +18,7 @@ class Disciplina:
             conn = pymysql.connect(
                 host='localhost',
                 user='root',
-                password='senha',
+                password=config.senha_banco,
                 database='sistema_avaliacao',
                 cursorclass=pymysql.cursors.DictCursor
             )
@@ -56,7 +57,7 @@ class Disciplina:
         conn = pymysql.connect(
             host='localhost',
             user='root',
-            password='senha',
+            password=config.senha_banco,
             database='sistema_avaliacao',
             cursorclass=pymysql.cursors.DictCursor
         )
@@ -71,7 +72,7 @@ class Disciplina:
         conn = pymysql.connect(
             host='localhost',
             user='root',
-            password='senha',
+            password=config.senha_banco,
             database='sistema_avaliacao',
             cursorclass=pymysql.cursors.DictCursor
         )

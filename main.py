@@ -4,6 +4,7 @@ from Models.Classes.classAdmin import Admin
 from Models.Classes.classAluno import Aluno  
 from Models.Classes.classProfessor import Professor  
 from Models.Classes.classDisciplina import Disciplina  
+import config
 
 app = Flask(__name__)
 app.secret_key = 'sua_chave_secreta'
@@ -13,7 +14,7 @@ def conectar_banco():
     return pymysql.connect(
         host='localhost',
         user='root',
-        password='senha',
+        password=config.senha_banco,
         database='sistema_avaliacao',
         cursorclass=pymysql.cursors.DictCursor
     )
@@ -102,10 +103,11 @@ def editar_disciplina(codigo,nome):
     
     return render_template('editar_disciplina.html',codigo=codigo, nome=nome)
 
-@app.route('/excluir_disciplina/<codigo>')
+@app.route('/excluir_disciplina/<codigo>',methods=['POST'])
 def excluir_disciplina(codigo):
+    print(f"Excluindo disciplina com código:")
     Disciplina.excluir_disciplina(codigo)
-    return redirect(url_for('disciplinas'))
+    return redirect(url_for('listar_disciplinas'))
 
 @app.route('/avaliar_disciplina/<codigo>/<nome>', methods=['GET', 'POST'])
 def avaliar_disciplina(codigo,nome):
@@ -252,7 +254,7 @@ def cadastrar_professor():
         if sucesso:
             return render_template('cadastrar_professor.html', sucesso=True)
         else:
-            return render_template('cadastrar_professor.html', erro="Erro ao cadastrar professor. Verifique se o e-mail já está cadastrado.")
+            return render_template('cadastrar_professor.html', erro="Erro ao cadastrar professor. Verifique se o e-mail ou matrícula já estão cadastrados.")
 
     return render_template('cadastrar_professor.html')
 
@@ -299,6 +301,28 @@ def listar_usuarios():
 
     return render_template('usuarios.html', usuarios=usuarios, tipo_selecionado=tipo_filtro, session=session)
 
+# @app.route('/editar_usuario/<email>', methods=['GET', 'POST'])
+# def editar_usuario(email):
+#     if request.method == 'POST':
+#         nova_senha = request.form.get('senha')
+
+#         conn = conectar_banco()
+#         cursor = conn.cursor()
+#         query = """
+#             UPDATE sistema_avaliacao.Professores SET senha = %s WHERE email = %s
+#             UNION ALL
+#             UPDATE sistema_avaliacao.Alunos SET senha = %s WHERE email = %s
+#             UNION ALL
+#             UPDATE sistema_avaliacao.Administradores SET senha = %s WHERE email = %s
+#         """
+#         cursor.execute(query, (nova_senha, email))
+#         conn.commit()
+#         conn.close()
+
+#         return redirect(url_for('listar_usuarios'))
+
+#     return render_template('editar_usuario.html', email=email, session=session)
+
 @app.route('/editar_usuario/<email>', methods=['GET', 'POST'])
 def editar_usuario(email):
     if request.method == 'POST':
@@ -306,14 +330,16 @@ def editar_usuario(email):
 
         conn = conectar_banco()
         cursor = conn.cursor()
-        query = """
-            UPDATE sistema_avaliacao.Professores SET senha = %s WHERE email = %s
-            UNION ALL
-            UPDATE sistema_avaliacao.Alunos SET senha = %s WHERE email = %s
-            UNION ALL
-            UPDATE sistema_avaliacao.Administradores SET senha = %s WHERE email = %s
-        """
-        cursor.execute(query, (nova_senha, email))
+
+        # Tenta atualizar nas três tabelas, sem erro se o e-mail não existir em alguma
+        query1 = "UPDATE sistema_avaliacao.Professores SET senha = %s WHERE email = %s"
+        query2 = "UPDATE sistema_avaliacao.Alunos SET senha = %s WHERE email = %s"
+        query3 = "UPDATE sistema_avaliacao.Administradores SET senha = %s WHERE email = %s"
+
+        cursor.execute(query1, (nova_senha, email))
+        cursor.execute(query2, (nova_senha, email))
+        cursor.execute(query3, (nova_senha, email))
+
         conn.commit()
         conn.close()
 
@@ -325,14 +351,15 @@ def editar_usuario(email):
 def excluir_usuario(email):
     conn = conectar_banco()
     cursor = conn.cursor()
-    query = """
-            DELETE FROM sistema_avaliacao.Professores WHERE email = %s
-            UNION ALL
-            DELETE FROM sistema_avaliacao.Alunos WHERE email = %s
-            UNION ALL
-            DELETE FROM sistema_avaliacao.Administradores WHERE email = %s
-            """
-    cursor.execute(query, (email,))
+
+    query1 = "DELETE FROM sistema_avaliacao.Professores WHERE email = %s"
+    query2 = "DELETE FROM sistema_avaliacao.Alunos WHERE email = %s"
+    query3 = "DELETE FROM sistema_avaliacao.Administradores WHERE email = %s"
+
+    cursor.execute(query1, (email,))
+    cursor.execute(query2, (email,))
+    cursor.execute(query3, (email,))
+
     conn.commit()
     conn.close()
 

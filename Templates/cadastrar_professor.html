@@ -54,6 +54,8 @@
     
             {% if sucesso %}
                 <p style="color: green;">Professor cadastrado com sucesso!</p>
+            {% elif erro %}
+            <p style="color: red;">{{ erro }}</p>
             {% endif %}
         </form>
     

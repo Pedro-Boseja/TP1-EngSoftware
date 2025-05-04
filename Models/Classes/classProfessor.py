@@ -1,5 +1,6 @@
 from .classUsuario import Usuario
 import pymysql
+import config
 
 class Professor(Usuario):
     def __init__(self, nome, matricula, email, senha):
@@ -19,7 +20,7 @@ class Professor(Usuario):
             conn = pymysql.connect(
                 host='localhost',
                 user='root',
-                password='senha',
+                password=config.senha_banco,
                 database='sistema_avaliacao',
                 cursorclass=pymysql.cursors.DictCursor
             )
@@ -35,6 +36,9 @@ class Professor(Usuario):
                 )
             ''')
 
+            if self._is_email_ja_cadastrado(self.get_email()):
+                return False
+
             cursor.execute('''
                 INSERT INTO sistema_avaliacao.Professores (email, senha, nome, matricula, tipo)
                 VALUES (%s, %s, %s, %s, %s)
@@ -48,11 +52,7 @@ class Professor(Usuario):
             
             conn.commit()
             return True  # sucesso
-        except pymysql.err.IntegrityError:
-            print(f"Professor com email '{self.get_email()}' já existe.")
-            return False
         except Exception as e:
-            print(f"Erro ao salvar professor no banco: {e}")
             return False
         finally:
             conn.close()
@@ -63,5 +63,22 @@ class Professor(Usuario):
     def get_matricula(self):
         return self.__matricula
     
+    def _is_email_ja_cadastrado(self, email):
+        """
+        Verifica se o email já existe no banco de dados.
+        """
+        conn = pymysql.connect(
+            host='localhost',
+            user='root',
+            password=config.senha_banco,
+            database='sistema_avaliacao',
+            cursorclass=pymysql.cursors.DictCursor
+        )
+        cursor = conn.cursor()
+        cursor.execute('SELECT * FROM sistema_avaliacao.Professores WHERE email = %s', (email,))
+        result = cursor.fetchone()
+        conn.close()
+        return result is not None
+
     def __repr__(self):
         return f"Professor(nome={self.nome}, matricula={self.matricula}, email={self.get_email()}, type={self.get_type()})"
